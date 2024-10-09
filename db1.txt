@@ -1,0 +1,113 @@
+Предметная область: Гостиничный сервис
+
+-- Функциональные требования
+ Авторизация/аутентификация пользователя.
+ Наличие ролей: администратор, клиент.
+- Администратор может:
+ 1. Добавить/редактировать/удалить номер
+ 2. Добавить/редактировать/удалить категорию номера
+ 3. Добавить/редактировать/удалить услугу
+ 4. Добавить/редактировать/удалить промокод
+ 5. Просматривать список клиентов
+ 6. Просматривать информацию о бронях
+ 7. Просматривать информацию о платежах
+- Клиент:
+ 1. Забронировать номер
+ 2. Подписаться на услуги
+ 3. Оставить отзыв
+ 4. Использовать промокод при бронировании
+ 5. Просматривать историю бронирований
+ Действия клиента журналируются.
+
+
+--Список таблиц
+
+-User
+ ID (INT, NOT NULL)
+ Name (VARCHAR, NOT NULL)
+ Email (VARCHAR, UNIQUE, NOT NULL)
+ Phone (VARCHAR, UNIQUE, NOT NULL)
+ Password (VARCHAR, NOT NULL)
+ Role_id (INT, FK)
+ Связи:
+ - OneToMany с Journal
+ - OneToMany с Reservation
+ - OneToMany с Review
+ - ManyToOne с с Role
+
+-Journal
+ ID (INT, NOT NULL)
+ User_id (INT, FK)
+ Action (VARCHAR, NOT NULL)
+ Date (DATETIME, NOT NULL)
+ Связи:
+ - ManyToOne с User
+
+-Role
+ ID (INT, NOT NULL)
+ Name (VARCHAR, UNIQUE, NOT NULL)
+ Связи:
+ - OneToMany с User
+
+-Room
+ ID (INT, NOT NULL)
+ Number (INT, UNIQUE, NOT NULL)
+ Category_id (INT, FK)
+ Status (VARCHAR, NOT NULL)
+ Capacity (INT, NOT NULL)
+ Связи:
+ - OneToMany с Reservation
+ - ManyToOne с Category
+
+-Category
+ ID (INT, NOT NULL)
+ Name (VARCHAR, NOT NULL)
+ Cost (INT, NOT NULL)
+ Связи:
+ - OneToMany с Room
+
+-Service
+ ID (INT, NOT NULL)
+ Name (VARCHAR, UNIQUE, NOT NULL)
+ Cost (INT, NOT NULL)
+ Связи:
+ - ManyToMany с Reservation
+
+-Promo
+ ID (INT, NOT NULL)
+ Code (VARCHAR, UNIQUE, NOT NULL)
+ Discount (INT, NOT NULL)
+ Description (VARCHAR, NOT NULL)
+ Untill_date (DATETIME, NOT NULL)
+ Связи:
+ - OneToMany с Reservation
+
+-Reservation
+ ID (int, NOT NULL)
+ User_id (INT, FK)
+ Room_id (INT, FK)
+ In_date (DATETIME, NOT NULL)
+ Out_date (DATETIME, NOT NULL)
+ Sum (INT, NOT NULL)
+ Promo (INT, FK)
+ Payment_way_id (INT, FK)
+ Связи:
+ - ManyToOne с User
+ - ManyToOne с Room
+ - ManyToMany с Service
+ - ManyToOne с Promo
+ - OneToOne с Payment_way
+ 
+-Payment_way
+ ID (INT, NOT NULL)
+ Name (VARCHAR, NOT NULL)
+ Связи:
+ - OneToOne с Reservation
+
+-Review
+ ID (INT, NOT NULL)
+ User_id (INT, FK)
+ Text (VARCHAR)
+ Rate (INT, NOT NULL)
+ Связи:
+ - ManyToOne с User
